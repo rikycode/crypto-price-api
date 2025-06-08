@@ -48,16 +48,19 @@ app.get('/wallet/native', async (req, res) => {
     const response = await axios.get(
       `https://deep-index.moralis.io/api/v2.2/${address}/balance?chain=${chain}`,
       {
-        headers: { 'X-API-Key': process.env.MORALIS_API_KEY },
+        headers: {
+          'X-API-Key': process.env.MORALIS_API_KEY,
+        },
       }
     );
-    const balance = parseFloat(response.data.balance) / 1e18;
-    res.json({ balance });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: 'Error fetching native balance' });
+
+    res.json({ balance: response.data.balance });
+  } catch (err) {
+    console.error(`[GET /wallet/native] Error:`, err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to fetch native balance' });
   }
 });
+
 
 app.get('/wallet/erc20', async (req, res) => {
   const { address, chain } = req.query;
@@ -69,15 +72,19 @@ app.get('/wallet/erc20', async (req, res) => {
     const response = await axios.get(
       `https://deep-index.moralis.io/api/v2.2/${address}/erc20?chain=${chain}`,
       {
-        headers: { 'X-API-Key': process.env.MORALIS_API_KEY },
+        headers: {
+          'X-API-Key': process.env.MORALIS_API_KEY,
+        },
       }
     );
+
     res.json(response.data);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: 'Error fetching ERC20 tokens' });
+  } catch (err) {
+    console.error(`[GET /wallet/erc20] Error:`, err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to fetch ERC20 tokens' });
   }
 });
+
 
 app.get('/wallet/nfts', async (req, res) => {
   const { address, chain } = req.query;
